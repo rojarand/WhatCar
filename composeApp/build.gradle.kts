@@ -33,6 +33,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+//            implementation("androidx.core:core-ktx:1.9.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
