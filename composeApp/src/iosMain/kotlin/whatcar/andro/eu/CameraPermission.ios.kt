@@ -1,5 +1,6 @@
 package whatcar.andro.eu
 
+import androidx.compose.runtime.Composable
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.authorizationStatusForMediaType
 import platform.AVFoundation.requestAccessForMediaType
@@ -33,4 +34,8 @@ actual fun requestCameraPermission(context: Any?, permissionHandler: (CameraPerm
     AVCaptureDevice.requestAccessForMediaType(mediaType = MediaTypeVideo) { isGranted ->
         permissionHandler(if(isGranted) CameraPermission.GRANTED else CameraPermission.DENIED)
     }
+}
+
+@Composable
+actual fun CameraView() {
 }

@@ -1,5 +1,7 @@
 package whatcar.andro.eu
 
+import androidx.compose.runtime.Composable
+
 enum class CameraPermission {
     GRANTED,
     DENIED
@@ -8,6 +10,9 @@ enum class CameraPermission {
 expect fun checkCameraPermission(context: Any?): CameraPermission
 
 expect fun requestCameraPermission(context: Any?, permissionHandler: (CameraPermission) -> Unit)
+
+@Composable
+expect fun CameraView()
 
 /*
 class CameraPermissionChecker {

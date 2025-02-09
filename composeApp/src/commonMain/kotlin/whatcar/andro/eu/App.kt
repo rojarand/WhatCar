@@ -1,38 +1,45 @@
 package whatcar.andro.eu
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import whatcar.composeapp.generated.resources.Res
-import whatcar.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
 fun App(context: Any? = null) {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
+        var cameraPermission by remember { mutableStateOf(checkCameraPermission(context)) }
+        var displayOfCameraAllowed by remember { mutableStateOf(true) }
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            if (checkCameraPermission(context) == CameraPermission.DENIED) {
-                requestCameraPermission(context) { permission ->
-                    if (permission == CameraPermission.GRANTED) {
-                        showContent = true
+            if (cameraPermission == CameraPermission.GRANTED) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    if (displayOfCameraAllowed) {
+                        CameraView()
+                    }
+                    Button(
+                        onClick = { displayOfCameraAllowed = !displayOfCameraAllowed },
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp)
+                    ) {
+                        Text(if (displayOfCameraAllowed) "Hide Camera" else "Show Camera")
                     }
                 }
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+            } else {
+                requestCameraPermission(context) { newCameraPermission ->
+                    cameraPermission = newCameraPermission
                 }
             }
         }
