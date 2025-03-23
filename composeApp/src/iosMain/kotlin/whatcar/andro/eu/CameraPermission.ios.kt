@@ -1,9 +1,22 @@
 package whatcar.andro.eu
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitView
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVCaptureDeviceInput
+import platform.AVFoundation.AVCaptureSession
+import platform.AVFoundation.AVCaptureSessionPresetHigh
+import platform.AVFoundation.AVCaptureVideoPreviewLayer
+import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
+import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.authorizationStatusForMediaType
 import platform.AVFoundation.requestAccessForMediaType
+import platform.CoreGraphics.CGRectMake
+import platform.UIKit.UIColor
+import platform.UIKit.UIViewController
 
 enum class AVAuthorizationStatus(val code: Long) {
     NOT_DETERMINED(0),
@@ -38,4 +51,48 @@ actual fun requestCameraPermission(context: Any?, permissionHandler: (CameraPerm
 
 @Composable
 actual fun CameraView() {
+
+    UIKitView(
+        factory = { CameraPreviewViewController().view }
+        , modifier = Modifier.fillMaxSize()
+    )
+
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class CameraPreviewViewController : UIViewController(nibName = null, bundle = null) {
+
+    /*
+    override fun viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.greenColor
+    }
+    */
+    private val captureSession = AVCaptureSession()
+    private val videoPreviewLayer = AVCaptureVideoPreviewLayer(session = captureSession)
+
+    override fun viewDidLoad() {
+        super.viewDidLoad()
+        setupCamera()
+    }
+
+    private fun setupCamera() {
+        captureSession.sessionPreset = AVCaptureSessionPresetHigh
+        val camera = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: return
+        val input = try {
+            AVCaptureDeviceInput(camera, null)
+        } catch (e: Exception) {
+            return
+        }
+
+        if (captureSession.canAddInput(input)) {
+            captureSession.addInput(input)
+        }
+
+        videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        videoPreviewLayer.frame = view.bounds
+        view.layer.addSublayer(videoPreviewLayer)
+
+        captureSession.startRunning()
+    }
 }

@@ -28,7 +28,10 @@ fun App(context: Any? = null) {
             if (cameraPermission == CameraPermission.GRANTED) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     if (displayOfCameraAllowed) {
-                        CameraView()
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            CameraView()
+                            Text(cameraPermission.toString(), style = MaterialTheme.typography.h4)
+                        }
                     }
                     Button(
                         onClick = { displayOfCameraAllowed = !displayOfCameraAllowed },
